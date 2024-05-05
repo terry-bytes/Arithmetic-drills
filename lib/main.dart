@@ -51,31 +51,35 @@ class _ArithmeticDrillsScreenState extends State<ArithmeticDrillsScreen> {
     super.dispose();
   }
 
-  void _generateProblems() {
-    for (int i = 0; i < numProblems; i++) {
-      int operand1, operand2;
-      String operator;
+void _generateProblems() {
+    try {
+      for (int i = 0; i < numProblems; i++) {
+        int operand1, operand2;
+        String operator;
 
-      if (i < numProblems / 4) {
-        operand1 = _random.nextInt(maxAddSub) + 1;
-        operand2 = _random.nextInt(maxAddSub) + 1;
-        operator = '+';
-      } else if (i < numProblems / 2) {
-        operand1 = _random.nextInt(maxAddSub) + 1;
-        operand2 = _random.nextInt(operand1) + 1;
-        operator = '-';
-      } else if (i < 3 * numProblems / 4) {
-        operand1 = _random.nextInt(maxMul) + 1;
-        operand2 = _random.nextInt(maxMul) + 1;
-        operator = '×';
-      } else {
-        operand2 = _random.nextInt(maxMul) + 1;
-        operand1 = operand2 * (_random.nextInt(maxMul) + 1);
-        operator = '÷';
+        if (i < numProblems / 4) {
+          operand1 = _random.nextInt(maxAddSub) + 1;
+          operand2 = _random.nextInt(maxAddSub) + 1;
+          operator = '+';
+        } else if (i < numProblems / 2) {
+          operand1 = _random.nextInt(maxAddSub) + 1;
+          operand2 = _random.nextInt(operand1) + 1;
+          operator = '-';
+        } else if (i < 3 * numProblems / 4) {
+          operand1 = _random.nextInt(maxMul) + 1;
+          operand2 = _random.nextInt(maxMul) + 1;
+          operator = '×';
+        } else {
+          operand2 = _random.nextInt(maxMul) + 1;
+          operand1 = operand2 * (_random.nextInt(maxMul) + 1);
+          operator = '÷';
+        }
+
+        _problems.add('$operand1 $operator $operand2');
+        _answers.add(_getExpectedAnswer(operand1, operand2, operator));
       }
-
-      _problems.add('$operand1 $operator $operand2');
-      _answers.add(_getExpectedAnswer(operand1, operand2, operator));
+    } catch (e) {
+      print('Error while generating problems: $e');
     }
   }
 
@@ -97,19 +101,23 @@ class _ArithmeticDrillsScreenState extends State<ArithmeticDrillsScreen> {
   void _checkAnswer(int userAnswer) {
     setState(() {
       String message;
-      if (userAnswer == _answers[_currentIndex]) {
-        _score++;
-        message = 'Correct!';
-      } else {
-        message = 'Wrong! The correct answer is ${_answers[_currentIndex]}.';
-      }
-      _currentIndex++;
-      _controller.clear();
+      try {
+        if (userAnswer == _answers[_currentIndex]) {
+          _score++;
+          message = 'Correct!';
+        } else {
+          message = 'Wrong! The correct answer is ${_answers[_currentIndex]}.';
+        }
+        _currentIndex++;
+        _controller.clear();
 
-      if (_currentIndex == numProblems) {
-        _showCelebratoryAnimation();
-      } else {
-        _showMessageDialog(message);
+        if (_currentIndex == numProblems) {
+          _showCelebratoryAnimation();
+        } else {
+          _showMessageDialog(message);
+        }
+      } catch (e) {
+        print('Error while checking answer: $e');
       }
     });
   }
